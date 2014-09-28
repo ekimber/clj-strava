@@ -18,7 +18,8 @@ or supply an environment variable `STRAVA_SECRET`.
 
 NS require :
 
-    (:require [clj-strava.api :as strava)
+    (:require [clj-strava.api :as strava]
+              [clojure.core.async :refer [<!!]])
 
 To acquire a token, obtain a code as described here: http://strava.github.io/api/v3/oauth/
 
