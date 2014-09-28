@@ -5,6 +5,8 @@ A library that provides functions for consuming the Strava API V3.
 Currently only auth and the GET methods are available.  Not all resources have been tested.
 The library is currently in development and provided functions may change at any time.
 
+Note: Requires Clojure 1.7 alpha and core.async alpha!
+
 ## Usage
 
 Leiningen dependency:
