@@ -8,29 +8,35 @@ The library is currently in development and provided functions may change at any
 ## Usage
 
 Leiningen dependency:
+
     [ekimber/clj-strava "0.1.0"]
 
 Place your secret in a `.lein-env` file `{:strava-secret "your secret"}` in the project root,
 or supply an environment variable `STRAVA_SECRET`.
 
 NS require :
+
     (:require [clj-strava.api :as strava)
 
 To acquire a token, obtain a code as described here: http://strava.github.io/api/v3/oauth/
 
 Then we can swap the code for an access token:
+
     (strava/swap-tokens code)
 
 Pass in the access token to the API functions.  They require a map of URL replacements where appropriate
 and additional query params can be passed in an optional map.  Keywordized JSON is returned on an async channel.
 
 Example: list activities
+
     (<!! (strava/activities access-token {"per_page 5"}))
 
 Example: list athlete's KOMs
+
     (<!! (strava/athlete-koms access-token {:id 490421} {"per_page" 5}))
 
 ## Available API functions
+
      activities "/v3/athlete/activities"
      activity "/v3/activities/:id" :id
      activity-streams "/v3/activities/:id/streams/:types" :id :types
