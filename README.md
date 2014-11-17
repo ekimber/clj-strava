@@ -11,10 +11,10 @@ Note: Requires Clojure 1.7 alpha and core.async alpha!
 
 Leiningen dependency:
 
-    [ekimber/clj-strava "0.1.0"]
+    [ekimber/clj-strava "0.1.1"]
 
-Place your secret in a `.lein-env` file `{:strava-secret "your secret"}` in the project root,
-or supply an environment variable `STRAVA_SECRET`.
+Place your secret in a `.lein-env` file `{:strava-secret "your secret" :strava-id 1234}` in the project root,
+or supply environment variables `STRAVA_SECRET` and `STRAVA_ID`.
 
 NS require :
 
