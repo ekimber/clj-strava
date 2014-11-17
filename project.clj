@@ -1,4 +1,4 @@
-(defproject ekimber/clj-strava "0.1.0"
+(defproject ekimber/clj-strava "0.1.1"
   :description "Strava API"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"

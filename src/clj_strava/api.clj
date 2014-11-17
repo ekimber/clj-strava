@@ -11,6 +11,7 @@
 (def strava-url "https://www.strava.com")
 (def endpoint (str strava-url "/api"))
 (def secret (env :strava-secret))
+(def client-id (env :strava-id))
 
 (defn url-encode [s] (URLEncoder/encode (str s) "utf8"))
 (defn auth-header [token] {:headers {"Authorization" (str "Bearer " token)}})
@@ -19,7 +20,7 @@
   (:body
    @(http/post (str strava-url "/oauth/token")
                {:form-params
-                {:client_id 2792
+                {:client_id client-id
                  :client_secret (url-encode secret)
                  :code (url-encode code)}})))
 
