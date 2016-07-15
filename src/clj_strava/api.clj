@@ -55,20 +55,20 @@
        (client/json-get
          (url-builder ~url)
          (merge {:query-params params#} (auth-header token#))))
-       ([token#]
-        (~name token# {}))))
+      ([token#]
+       (~name token# {}))))
 
-   ([name url & url-param-names] ;TODO could validate url-param-names
-    `(defn ~name
-       ([token# url-params# params#]
-        (client/json-get
-         (url-builder ~url url-params#)
-         (merge {:query-params params#} (auth-header token#))))
-       ([token# url-params#]
-        (~name token# url-params# {})))))
+  ([name url & url-param-names] ;TODO could validate url-param-names
+   `(defn ~name
+      ([token# url-params# params#]
+       (client/json-get
+        (url-builder ~url url-params#)
+        (merge {:query-params params#} (auth-header token#))))
+      ([token# url-params#]
+       (~name token# url-params# {})))))
 
 #_(defmacro tm [arg & ps]
-  `(defn a ~(if ps '[arg f] '[arg]) f))
+   `(defn a ~(if ps '[arg f] '[arg]) f))
 
 #_(macroexpand '(tm 1))
 
