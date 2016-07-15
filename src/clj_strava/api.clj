@@ -25,10 +25,10 @@
                  :code (url-encode code)}})))
 
 (defn access-token [code]
-  ((json/read-str (swap-tokens code)) "access_token"))
+  (json/read-str (swap-tokens code) :key-fn keyword))
 
 (defn exchange-tokens [code]
-   {:access-token ((access-token code) "access_token")})
+   {:access-token (:access_token (access-token code))})
 
 (defn replace-keywords
   "Replace url params like so:
