@@ -12,9 +12,22 @@
 (def endpoint (str strava-url "/api"))
 (def secret (env :strava-secret))
 (def client-id (env :strava-id))
+(def redirect-uri (env :strava-redirect-uri))
 
 (defn url-encode [s] (URLEncoder/encode (str s) "utf8"))
 (defn auth-header [token] {:headers {"Authorization" (str "Bearer " token)}})
+
+(defn- make-query-string [m]
+  (let [s #(if (instance? clojure.lang.Named %) (name %) %)]
+    (->> (for [[k v] m]
+           (str (url-encode (s k))
+                "="
+                (url-encode (str v))))
+         (interpose "&")
+         (apply str))))
+
+(defn- build-url [url-base query-map & [encoding]]
+  (str url-base "?" (make-query-string query-map encoding)))
 
 (defn swap-tokens [code]
   (:body
@@ -46,6 +59,12 @@
    (str endpoint url))
   ([url params]
    (url-builder (replace-keywords url params))))
+
+(defn get-auth-code-url []
+  (build-url (str strava-url "/oauth/authorize")
+             {:client_id     client-id
+              :response_type "code"
+              :redirect_uri  redirect-uri}))
 
 ;TODO could simplify this macro
 (defmacro defapifn
