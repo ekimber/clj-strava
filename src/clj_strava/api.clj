@@ -12,9 +12,22 @@
 (def endpoint (str strava-url "/api"))
 (def secret (env :strava-secret))
 (def client-id (env :strava-id))
+(def redirect-uri (env :strava-redirect-uri))
 
 (defn url-encode [s] (URLEncoder/encode (str s) "utf8"))
 (defn auth-header [token] {:headers {"Authorization" (str "Bearer " token)}})
+
+(defn- make-query-string [m]
+  (let [s #(if (instance? clojure.lang.Named %) (name %) %)]
+    (->> (for [[k v] m]
+           (str (url-encode (s k))
+                "="
+                (url-encode (str v))))
+         (interpose "&")
+         (apply str))))
+
+(defn- build-url [url-base query-map & [encoding]]
+  (str url-base "?" (make-query-string query-map encoding)))
 
 (defn swap-tokens [code]
   (:body
@@ -25,10 +38,10 @@
                  :code (url-encode code)}})))
 
 (defn access-token [code]
-  ((json/read-str (swap-tokens code)) "access_token"))
+  (json/read-str (swap-tokens code) :key-fn keyword))
 
 (defn exchange-tokens [code]
-   {:access-token ((access-token code) "access_token")})
+   {:access-token (:access_token (access-token code))})
 
 (defn replace-keywords
   "Replace url params like so:
@@ -47,6 +60,12 @@
   ([url params]
    (url-builder (replace-keywords url params))))
 
+(defn get-auth-code-url []
+  (build-url (str strava-url "/oauth/authorize")
+             {:client_id     client-id
+              :response_type "code"
+              :redirect_uri  redirect-uri}))
+
 ;TODO could simplify this macro
 (defmacro defapifn
   ([name url]
@@ -55,20 +74,20 @@
        (client/json-get
          (url-builder ~url)
          (merge {:query-params params#} (auth-header token#))))
-       ([token#]
-        (~name token# {}))))
+      ([token#]
+       (~name token# {}))))
 
-   ([name url & url-param-names] ;TODO could validate url-param-names
-    `(defn ~name
-       ([token# url-params# params#]
-        (client/json-get
-         (url-builder ~url url-params#)
-         (merge {:query-params params#} (auth-header token#))))
-       ([token# url-params#]
-        (~name token# url-params# {})))))
+  ([name url & url-param-names] ;TODO could validate url-param-names
+   `(defn ~name
+      ([token# url-params# params#]
+       (client/json-get
+        (url-builder ~url url-params#)
+        (merge {:query-params params#} (auth-header token#))))
+      ([token# url-params#]
+       (~name token# url-params# {})))))
 
 #_(defmacro tm [arg & ps]
-  `(defn a ~(if ps '[arg f] '[arg]) f))
+   `(defn a ~(if ps '[arg f] '[arg]) f))
 
 #_(macroexpand '(tm 1))
 
