@@ -29,24 +29,46 @@ NS require :
 
 To acquire a token, obtain a code as described here: http://strava.github.io/api/v3/oauth/
 
-The code is obtained from the response during [Strava's OAuth2 authentication](https://developers.strava.com/docs/authentication/) process.
+The code is obtained from the response during [Strava's OAuth2 authentication](https://developers.strava.com/docs/authentication/) process. This is a good [write up about how to get this code](https://yizeng.me/2017/01/11/get-a-strava-api-access-token-with-write-permission/).
 
 ## Get the Authorization Code
 
 example request url:
 ```
 https://www.strava.com/oauth/authorize?client_id=28964&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=view_private,write
-
 ```
 
-example response:
+In your frontend ClojureScript view, you need create a link to this authorization page.
+
 ```
-http://localhost/exchange_token?state=&code=bd12d017f3674ad65f5ea9712cf9c29d5b807112&scope=view_private,write
+(def client-id "your-client-id")
+(def redirect-uri "http://localhost:3000/api/strava/token")
+(def response-type "code")
+(def scope "view_private,write")
+(def approval-prompt "force")
+(def strava-authorize-url
+  (str "https://www.strava.com/oauth/authorize?"
+       "client_id=" client-id "&"
+       "response_type=" response-type "&"
+       "redirect_uri=" redirect-uri "&"
+       "approval_prompt=" approval-prompt "&"
+       "scope=" scope))
+
+[:a {:href strava-authorize-url} "Authorize Strava"]
+```
+
+Then, from your web server Clojure app, you need to setup this "/api/strava/token" route to handle the response and update your user record adding the code.
+
+```
+(GET "/api/strava/token" request
+"handle the strava request, grab the code and store it with the user who granted access then redirect back to your home page"
+  (update-user-with-code (get-in request [:params :code]))
+  (redirect "/"))
 ```
 
 From this response, extract the code param `bd12d017f3674ad65f5ea9712cf9c29d5b807112`
 
-## Use the Authorization Code 
+## Use the Authorization Code
 
 Then we can swap the code for an access token:
 
@@ -108,6 +130,9 @@ Example: list athlete's KOMs
 
      uploads "/v3/uploads"
 
+## Github Projects using clj-strava
+
+[clojure-shed lesson 3](https://github.com/headwinds/clojure-shed)
 
 ## License
 
