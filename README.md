@@ -59,7 +59,7 @@ https://www.strava.com/oauth/authorize?client_id=28964&response_type=code&redire
 
 After the user visits this page and accepts the authorization, it will redirect them back to your app.
 
-Then, from your Clojure web server, you need to handle this redirect to your  "/api/strava/token" route and update your user record adding the code so that they don't have to authoize again.
+Then, from your Clojure web server, you need to handle this redirect to your  "/api/strava/token" route and update your user record adding the code so that they don't have to authorize again.
 
 An example compojure GET:
 ```
