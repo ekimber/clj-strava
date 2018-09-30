@@ -75,6 +75,8 @@ Once you have this code, you can then swap the code for an access token.
 
 Pass in the access token to the API functions.  They require a map of URL replacements where appropriate and additional query params can be passed in an optional map.  Keywordized JSON is returned on an core.async channel.
 
+Along with several ring and compojure libraries, your server will also include:
+
 * [clj-strava.api :as strava]
 * [clojure.core.async :refer [<!!]]
 * [cheshire.core :as cheshire]
