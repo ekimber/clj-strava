@@ -5,7 +5,11 @@ A library that provides functions for consuming the Strava API V3.
 Currently only auth and the GET methods are available.  Not all resources have been tested.
 The library is currently in development and provided functions may change at any time.
 
-Note: Requires Clojure 1.7 alpha and core.async alpha!
+
+# Requirements
+
+* [Clojure 1.7 - 1.9](https://clojure.org/community/downloads) `brew install clojure`
+* [core.async](https://github.com/clojure/core.async) last tested against 0.4.474
 
 ## Usage
 
@@ -16,6 +20,8 @@ Leiningen dependency:
 Place your secret in a `.lein-env` file `{:strava-secret "your secret" :strava-id 1234}` in the project root,
 or supply environment variables `STRAVA_SECRET` and `STRAVA_ID`.
 
+You also want to collect your public access token which you can add to .lein-env or simply store as a def within your clj file.
+
 NS require :
 
     (:require [clj-strava.api :as strava]
@@ -23,9 +29,37 @@ NS require :
 
 To acquire a token, obtain a code as described here: http://strava.github.io/api/v3/oauth/
 
+The code is obtained from the response during [Strava's OAuth2 authentication](https://developers.strava.com/docs/authentication/) process.
+
+## Get the Authorization Code
+
+example request url:
+```
+https://www.strava.com/oauth/authorize?client_id=28964&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=view_private,write
+
+```
+
+example response:
+```
+http://localhost/exchange_token?state=&code=bd12d017f3674ad65f5ea9712cf9c29d5b807112&scope=view_private,write
+```
+
+From this response, extract the code param `bd12d017f3674ad65f5ea9712cf9c29d5b807112`
+
+## Use the Authorization Code 
+
 Then we can swap the code for an access token:
 
-    (strava/swap-tokens code)
+```
+(def public-strava-token
+    (env :strava-public-token))
+
+(defn get-activities []
+  "this GET route handler will return your json activities from Strava"
+  (fn []
+    (let [access-token (strava/access-token public-strava-token)]
+      (<!! (strava/activities access-token {"per_page 5"})))))
+```
 
 Pass in the access token to the API functions.  They require a map of URL replacements where appropriate
 and additional query params can be passed in an optional map.  Keywordized JSON is returned on an async channel.
