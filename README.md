@@ -33,12 +33,7 @@ The code is obtained from the response during [Strava's OAuth2 authentication](h
 
 ## Get the Authorization Code
 
-example request url:
-```
-https://www.strava.com/oauth/authorize?client_id=28964&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=view_private,write
-```
-
-In your frontend ClojureScript view, you need create a link to this authorization page.
+In your frontend ClojureScript view, you need create a link to the authorization page hosted on strava.com:
 
 ```
 (def client-id "your-client-id")
@@ -57,8 +52,16 @@ In your frontend ClojureScript view, you need create a link to this authorizatio
 [:a {:href strava-authorize-url} "Authorize Strava"]
 ```
 
-Then, from your web server Clojure app, you need to setup this "/api/strava/token" route to handle the response and update your user record adding the code.
+This will produce the following url:
+```
+https://www.strava.com/oauth/authorize?client_id=28964&response_type=code&redirect_uri=http://localhost:3000/api/strava/token&approval_prompt=force&scope=view_private,write
+```
 
+After the user visits this page and accepts the authorization, it will redirect them back to your app.
+
+Then, from your Clojure web server, you need to handle this redirect to your  "/api/strava/token" route and update your user record adding the code so that they don't have to authoize again.
+
+An example compojure GET:
 ```
 (GET "/api/strava/token" request
 "handle the strava request, grab the code and store it with the user who granted access then redirect back to your home page"
@@ -66,15 +69,19 @@ Then, from your web server Clojure app, you need to setup this "/api/strava/toke
   (redirect "/"))
 ```
 
-From this response, extract the code param `bd12d017f3674ad65f5ea9712cf9c29d5b807112`
+## Get Activities
 
-## Use the Authorization Code
+Once you have this code, you can then swap the code for an access token.
 
-Then we can swap the code for an access token:
+Pass in the access token to the API functions.  They require a map of URL replacements where appropriate and additional query params can be passed in an optional map.  Keywordized JSON is returned on an core.async channel.
+
+* [clj-strava.api :as strava]
+* [clojure.core.async :refer [<!!]]
+* [cheshire.core :as cheshire]
 
 ```
 (def public-strava-token
-    (env :strava-public-token))
+    (saved-user :strava-public-token))
 
 (defn get-activities []
   "this GET route handler will return your json activities from Strava"
@@ -83,8 +90,14 @@ Then we can swap the code for an access token:
       (<!! (strava/activities access-token {"per_page 5"})))))
 ```
 
-Pass in the access token to the API functions.  They require a map of URL replacements where appropriate
-and additional query params can be passed in an optional map.  Keywordized JSON is returned on an async channel.
+In order to return the activities as json, you can call get-activities from your compojure GET route and wrap it in cheshire.
+
+```
+(GET "/api/strava/activities/get" []
+  { :status 200
+    :content-type "application/json; charset=UTF-8"
+    :body (cheshire/generate-string (get-activities))})
+```
 
 Example: list activities
 
