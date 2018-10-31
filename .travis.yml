@@ -1,0 +1,2 @@
+language: clojure
+script: lein with-profile dev:dev,1.7:dev,1.8 midje
