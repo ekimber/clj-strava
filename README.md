@@ -1,5 +1,7 @@
 # clj-strava
 
+[![Build Status](https://travis-ci.com/ekimber/clj-strava.svg?branch=master)](https://travis-ci.com/ekimber/clj-strava)
+
 A library that provides functions for consuming the Strava API V3.
 
 Currently only auth and the GET methods are available.  Not all resources have been tested.
