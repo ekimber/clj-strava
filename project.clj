@@ -10,6 +10,6 @@
                  [org.clojure/tools.logging "0.2.6"]
                  [environ "1.1.0"]]
   :profiles {:dev {:dependencies [[midje "1.9.4"]]
-                   :plugins [[lein-midje "3.0.0"]]}
+                   :plugins [[lein-midje "3.1.3"]]}
              :1.7 {:dependencies [[org.clojure/clojure "1.7.0"]]}
              :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}})

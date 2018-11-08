@@ -26,10 +26,10 @@
          (interpose "&")
          (apply str))))
 
-(defn- build-url [url-base query-map & [encoding]]
-  (str url-base "?" (make-query-string query-map encoding)))
+(defn- build-url [url-base query-map]
+  (str url-base "?" (make-query-string query-map)))
 
-(defn swap-tokens [code]
+(defn swap-tokens [code]  
   (:body
    @(http/post (str strava-url "/oauth/token")
                {:form-params
@@ -37,7 +37,11 @@
                  :client_secret (url-encode secret)
                  :code (url-encode code)}})))
 
-(defn access-token [code]
+(defn access-token
+  "See: https://developers.strava.com/docs/authentication/
+
+Returns access and refresh tokens associated with the keys :access_token and :refresh_token"
+  [code]
   (json/read-str (swap-tokens code) :key-fn keyword))
 
 (defn exchange-tokens [code]
@@ -60,11 +64,14 @@
   ([url params]
    (url-builder (replace-keywords url params))))
 
-(defn get-auth-code-url []
-  (build-url (str strava-url "/oauth/authorize")
-             {:client_id     client-id
-              :response_type "code"
-              :redirect_uri  redirect-uri}))
+(defn get-auth-code-url
+  ([]
+   "Get auth code URL with defaults/environment configured params"
+   (get-auth-code-url {:client_id client-id :scope "read,activity:read"
+                       :redirect_uri redirect-uri :approval_prompt "auto"}))
+  ([req-params]
+   (build-url (str strava-url "/oauth/authorize")
+              (assoc req-params :response_type "code"))))
 
 ;TODO could simplify this macro
 (defmacro defapifn
