@@ -39,8 +39,7 @@
 
 (defn access-token
   "See: https://developers.strava.com/docs/authentication/
-
-Returns access and refresh tokens associated with the keys :access_token and :refresh_token"
+  Returns access and refresh tokens associated with the keys :access_token and :refresh_token"
   [code]
   (json/read-str (swap-tokens code) :key-fn keyword))
 

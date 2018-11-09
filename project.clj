@@ -1,4 +1,4 @@
-(defproject ekimber/clj-strava "0.2.0-SNAPSHOT"
+(defproject ekimber/clj-strava "0.2.0"
   :description "Strava API"
   :url "https://github.com/ekimber/clj-strava"
   :license {:name "Eclipse Public License"

@@ -5,19 +5,19 @@
 A library that provides functions for consuming the Strava API V3.
 
 Currently only auth and the GET methods are available.  Not all resources have been tested.
-The library is currently in development and provided functions may change at any time.
+The library is still in development and provided functions may change at any time.
 
 
 # Requirements
 
-* [Clojure 1.7 - 1.9](https://clojure.org/community/downloads) `brew install clojure`
+* [Clojure 1.9](https://clojure.org/community/downloads) `brew install clojure`
 * [core.async](https://github.com/clojure/core.async) last tested against 0.4.474
 
 ## Usage
 
 Leiningen dependency:
 
-    [ekimber/clj-strava "0.1.1"]
+    [ekimber/clj-strava "0.2.0"]
 
 Place your secret in a `.lein-env` file `{:strava-secret "your secret" :strava-id 1234}` in the project root,
 or supply environment variables `STRAVA_SECRET` and `STRAVA_ID`.
